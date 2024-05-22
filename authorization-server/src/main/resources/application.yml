@@ -1,0 +1,30 @@
+server:
+  port: 9000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+spring:
+  application:
+    name: authorization-server
+  security:
+    oauth2:
+      authorizationserver:
+        client:
+          mabr:
+            registration:
+              client-id: mabr
+              client-name: mabr
+              client-secret: 5367566B59703EQWRTRGFBP92F423F4528482B4D6251655468576D5A71383482
+              client-authentication-methods:
+                - client_secret_basic
+              authorization-grant-types:
+                - authorization_code
+                - refresh_token
+              redirect-uris:
+                - http://127.0.0.1:8080/login/oauth2/code/mabr-oidc
+                - http://127.0.0.1:8080/authorized
+              scopes:
+                - openid

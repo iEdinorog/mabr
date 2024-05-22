@@ -6,12 +6,12 @@ import org.mabr.postservice.dto.post.PostRequest;
 import org.mabr.postservice.entity.post.Post;
 import org.mabr.postservice.entity.post.PostBlock;
 import org.mabr.postservice.entity.post.PostComment;
+import org.mabr.postservice.entity.user.User;
 import org.mabr.postservice.exception.ResourceNotFoundException;
 import org.mabr.postservice.repository.post.PostCommentRepository;
 import org.mabr.postservice.repository.post.PostRepository;
 import org.mabr.postservice.service.data.DataService;
 import org.mabr.postservice.service.search.SearchService;
-import org.mabr.postservice.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,11 +28,10 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostCommentRepository commentRepository;
     private final DataService dataService;
-    private final UserService userService;
     private final SearchService searchService;
 
     public Post create(PostRequest postRequest) {
-        var user = userService.getUserProfile(postRequest.username());
+        User user = null;
 
         var blocks = getPostBlocks(postRequest.blocks());
 
@@ -117,7 +116,7 @@ public class PostService {
 
     public Post saveComment(int postId, CommentRequest commentRequest) {
         var post = getById(postId);
-        var user = userService.getUserProfile(commentRequest.username());
+        User user = null;
 
         var comment = new PostComment();
         comment.setContent(commentRequest.content());

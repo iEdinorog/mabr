@@ -1,6 +1,5 @@
 package org.mabr.postservice.exception;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -25,12 +24,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleResourceAlreadyExists(ResourceAlreadyExistsException e) {
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(ExpiredJwtException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public String handleExpiredJwt(ExpiredJwtException e) {
         return e.getMessage();
     }
 }

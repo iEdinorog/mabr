@@ -1,10 +1,10 @@
 package org.mabr.postservice.entity.post;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.mabr.postservice.entity.security.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.mabr.postservice.entity.user.User;
 
 import java.util.HashSet;
 import java.util.Set;

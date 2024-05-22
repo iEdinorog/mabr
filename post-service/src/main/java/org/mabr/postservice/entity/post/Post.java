@@ -1,8 +1,5 @@
 package org.mabr.postservice.entity.post;
 
-import org.mabr.postservice.entity.data.Image;
-import org.mabr.postservice.entity.data.Label;
-import org.mabr.postservice.entity.security.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.mabr.postservice.entity.data.Image;
+import org.mabr.postservice.entity.data.Label;
+import org.mabr.postservice.entity.user.User;
 
 import java.time.LocalDate;
 import java.util.HashSet;

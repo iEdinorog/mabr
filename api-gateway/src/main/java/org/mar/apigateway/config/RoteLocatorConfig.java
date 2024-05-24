@@ -1,0 +1,37 @@
+package org.mar.apigateway.config;
+
+import org.mar.apigateway.filter.AuthenticationFilter;
+import org.mar.apigateway.filter.AuthenticationFilter.Config;
+import org.springframework.cloud.gateway.route.RouteLocator;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class RoteLocatorConfig {
+
+    @Bean
+    public RouteLocator customRouteLocator(RouteLocatorBuilder builder, AuthenticationFilter authenticationFilter) {
+        return builder.routes()
+                .route(p -> p
+                        .path("/eureka/web")
+                        .filters(f -> f.setPath("/"))
+                        .uri("http://127.0.0.1:8761"))
+                .route(p -> p
+                        .path("/eureka/**")
+                        .uri("http://127.0.0.1:8761"))
+                .route(p -> p
+                        .path("/auth/**")
+                        .uri("lb://authentication-service"))
+                .route(p -> p
+                        .path("/api/messenger")
+                        .filters(f -> f.filter(authenticationFilter.apply(new Config())))
+                        .uri("lb://messenger-service"))
+                .route(p -> p
+                        .path("/api/data/**")
+                        .filters(f -> f.filter(authenticationFilter.apply(new Config())))
+                        .uri("lb://post-service"))
+
+                .build();
+    }
+}

@@ -17,7 +17,7 @@
     <modules>
         <module>post-service</module>
         <module>messenger-service</module>
-        <module>authorization-server</module>
+        <module>authentication-service</module>
         <module>api-gateway</module>
         <module>discovery-service</module>
     </modules>

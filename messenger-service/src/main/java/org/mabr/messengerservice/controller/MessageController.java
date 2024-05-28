@@ -1,28 +1,26 @@
 package org.mabr.messengerservice.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.mabr.messengerservice.dto.MessageDto;
+import org.mabr.messengerservice.serivce.MessageService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
-@RequestMapping("api/messenger")
+@RequestMapping("/message")
 @RequiredArgsConstructor
 public class MessageController {
 
-    private final WebClient.Builder webClient;
+    private final MessageService service;
 
-    @GetMapping
-    public ResponseEntity<String> getMessage(){
-        var web = webClient.build().get()
-                .uri("http://user-service/user/gleb")
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-
-        return ResponseEntity.ok(web);
+    @PostMapping()
+    public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageDto messageDto) {
+        service.sendMessage(messageDto);
+        return ResponseEntity.ok(HttpStatus.ACCEPTED);
     }
+
 }

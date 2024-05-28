@@ -28,7 +28,7 @@ public class RoteLocatorConfig {
                         .filters(f -> f.filter(authenticationFilter.apply(new Config())))
                         .uri("lb://user-service"))
                 .route(p -> p
-                        .path("/api/messenger")
+                        .path("/messenger/api/**")
                         .filters(f -> f.filter(authenticationFilter.apply(new Config())))
                         .uri("lb://messenger-service"))
                 .route(p -> p

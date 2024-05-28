@@ -48,7 +48,9 @@ public class AuthenticationController {
         var userDetails = userDetailsService.loadUserByUsername(username);
 
         if (jwtUtil.validateToken(token, userDetails)) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok()
+                    .header("authorUser", username)
+                    .build();
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

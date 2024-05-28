@@ -2,12 +2,16 @@ spring:
   application:
     name: messenger-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/mabr
+    url: jdbc:postgresql://localhost:5432/messenger_service
     username: postgres
     password: 123
-
+  jpa:
+    hibernate:
+      ddl-auto: update
 server:
   port: 8082
+  servlet:
+    context-path: /messenger/api/
 
 eureka:
   client:

@@ -43,7 +43,13 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                             .toBodilessEntity()
                             .flatMap(response -> {
                                 if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
+
+                                    exchange.getRequest()
+                                            .mutate()
+                                            .header("authorUser", response.getHeaders().getFirst("authorUser"));
+
                                     return chain.filter(exchange);
+
                                 } else {
                                     return Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token"));
                                 }

@@ -13,15 +13,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class MessageController {
 
-    private final RestTemplate restTemplate;
     private final WebClient.Builder webClient;
 
     @GetMapping
     public ResponseEntity<String> getMessage(){
-        var rest = restTemplate.getForEntity("http://post-service/api/data/city", String.class);
-
         var web = webClient.build().get()
-                .uri("http://post-service/api/data/city")
+                .uri("http://user-service/user/gleb")
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();

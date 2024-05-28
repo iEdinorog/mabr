@@ -9,6 +9,8 @@ spring:
     name: api-gateway
 
 server:
+  error:
+    include-message: always
   port: 8080
 
 eureka:

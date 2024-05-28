@@ -45,7 +45,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests((conf) -> conf
                         .requestMatchers("/auth").permitAll()
                         .requestMatchers("/auth/validate").permitAll()
-                        .requestMatchers("/auth/user/create").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session

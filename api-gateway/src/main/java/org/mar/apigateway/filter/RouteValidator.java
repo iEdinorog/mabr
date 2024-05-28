@@ -5,18 +5,20 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 @Component
 public class RouteValidator {
 
-    public static final List<String> openApiEndpoints = List.of(
-            "/auth",
-            "/auth/validate",
-            "/auth/user/create"
+    public static final List<Pattern> openApiEndpoints = List.of(
+            Pattern.compile("^/auth$"),
+            Pattern.compile("^/auth/validate$"),
+            Pattern.compile("^/user/create$"),
+            Pattern.compile("^/user/[^/]+$")
     );
 
     public Predicate<ServerHttpRequest> isSecured =
             request -> openApiEndpoints
                     .stream()
-                    .noneMatch(uri -> request.getURI().getPath().contains(uri));
+                    .noneMatch(pattern -> pattern.matcher(request.getURI().getPath()).matches());
 }

@@ -1,6 +1,6 @@
-package org.mabr.authenticationservice.repository;
+package org.mabr.userservice.repository;
 
-import org.mabr.authenticationservice.entity.User;
+import org.mabr.userservice.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -28,7 +28,6 @@ public class AuthenticationController {
     @PostMapping()
     public ResponseEntity<JwtResponse> createAuthenticationToken(@RequestBody JwtRequest request) {
         try {
-
             var authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     request.username(), request.password()
             ));
@@ -44,7 +43,6 @@ public class AuthenticationController {
 
     @GetMapping("/validate")
     public ResponseEntity<HttpStatus> validateToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
-        log.info("Start token validating");
         var token = bearerToken.split(" ")[1].trim();
         var username = jwtUtil.extractUsername(token);
         var userDetails = userDetailsService.loadUserByUsername(username);

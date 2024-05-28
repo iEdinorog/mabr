@@ -3,8 +3,11 @@ package org.mar.apigateway.filter;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -24,7 +27,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
         return ((exchange, chain) -> {
             if (validator.isSecured.test(exchange.getRequest())) {
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                    throw new RuntimeException("missing authorization header");
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing authorization header");
                 }
 
                 var authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
@@ -35,12 +38,14 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                             .uri("http://authentication-service/auth/validate")
                             .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                             .retrieve()
+                            .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->
+                                    Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token")))
                             .toBodilessEntity()
                             .flatMap(response -> {
-                                if (response.getStatusCode().is2xxSuccessful()) {
+                                if (response.getStatusCode().isSameCodeAs(HttpStatus.OK)) {
                                     return chain.filter(exchange);
                                 } else {
-                                    return Mono.error(new RuntimeException("Invalid token"));
+                                    return Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token"));
                                 }
                             });
                 }
@@ -51,6 +56,5 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     }
 
     public static class Config {
-
     }
 }

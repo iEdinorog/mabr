@@ -1,18 +1,18 @@
 package org.mabr.postservice.service.post;
 
+import lombok.RequiredArgsConstructor;
 import org.mabr.postservice.dto.post.CommentRequest;
 import org.mabr.postservice.dto.post.PostBlockDto;
 import org.mabr.postservice.dto.post.PostRequest;
 import org.mabr.postservice.entity.post.Post;
 import org.mabr.postservice.entity.post.PostBlock;
 import org.mabr.postservice.entity.post.PostComment;
-import org.mabr.postservice.entity.user.User;
 import org.mabr.postservice.exception.ResourceNotFoundException;
 import org.mabr.postservice.repository.post.PostCommentRepository;
 import org.mabr.postservice.repository.post.PostRepository;
 import org.mabr.postservice.service.data.DataService;
 import org.mabr.postservice.service.search.SearchService;
-import lombok.RequiredArgsConstructor;
+import org.mabr.postservice.service.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -29,14 +29,15 @@ public class PostService {
     private final PostCommentRepository commentRepository;
     private final DataService dataService;
     private final SearchService searchService;
+    private final UserService userService;
 
     public Post create(PostRequest postRequest) {
-        User user = null;
+        userService.checkUsername(postRequest.username());
 
         var blocks = getPostBlocks(postRequest.blocks());
 
         var post = Post.builder()
-                .author(user)
+                .author(postRequest.username())
                 .createdAt(postRequest.createdAt())
                 .title(postRequest.title())
                 .blocks(blocks)
@@ -116,12 +117,11 @@ public class PostService {
 
     public Post saveComment(int postId, CommentRequest commentRequest) {
         var post = getById(postId);
-        User user = null;
+        userService.checkUsername(commentRequest.username());
 
         var comment = new PostComment();
         comment.setContent(commentRequest.content());
-        comment.setUser(user);
-        comment.setUserId(user.getId());
+        comment.setUsername(commentRequest.username());
 
         post.getComments().add(comment);
         commentRepository.save(comment);

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.mabr.postservice.entity.user.User;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,13 +18,9 @@ public class PostComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(insertable = false, updatable = false)
-    private int userId;
-
-    @ManyToOne
     @JoinColumn(name = "userId")
     @JsonIgnore
-    private User user;
+    private String username;
 
     @Column(nullable = false)
     private String content;

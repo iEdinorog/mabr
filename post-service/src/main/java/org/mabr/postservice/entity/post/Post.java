@@ -13,7 +13,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.mabr.postservice.entity.data.Image;
 import org.mabr.postservice.entity.data.Label;
-import org.mabr.postservice.entity.user.User;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -36,8 +35,8 @@ public class Post {
     @Column(nullable = false)
     private LocalDate createdAt;
 
-    @ManyToOne
-    private User author;
+    @Column(nullable = false)
+    private String author;
 
     @FullTextField(searchable = Searchable.YES)
     @Column(nullable = false)

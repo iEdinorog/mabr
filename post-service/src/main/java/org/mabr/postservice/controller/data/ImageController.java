@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
 @RestController
-@RequestMapping("api/data/image")
+@RequestMapping("/data/image")
 @RequiredArgsConstructor
 public class ImageController {
 

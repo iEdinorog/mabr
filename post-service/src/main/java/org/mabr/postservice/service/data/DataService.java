@@ -19,46 +19,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DataService {
 
-    private final CurrencyRepository currencyRepository;
-    private final CityRepository cityRepository;
     private final ImageRepository imageRepository;
     private final LabelRepository labelRepository;
-    private final TempImageRepository tempImageRepository;
-
-    public List<Currency> getCurrencyList() {
-        return currencyRepository.findAll();
-    }
-
-    public List<City> getCityList() {
-        return cityRepository.findAll();
-    }
-
-    public Currency getCurrency(int currencyId) {
-        return currencyRepository.findById(currencyId)
-                .orElseThrow(() -> new ResourceNotFoundException("Currency", "id", String.valueOf(currencyId)));
-    }
-
-    public City getCity(int cityId) {
-        return cityRepository.findById(cityId)
-                .orElseThrow(() -> new ResourceNotFoundException("City", "id", String.valueOf(cityId)));
-    }
-
-    public Image saveImage(String imageLink) {
-        var tempImage = tempImageRepository.findByUrl(imageLink)
-                .orElseThrow(() -> new ResourceNotFoundException("image", "url", imageLink));
-
-        var image = Image.builder()
-                .code(tempImage.getCode())
-                .name(tempImage.getName())
-                .type(tempImage.getType())
-                .data(tempImage.getData())
-                .url(tempImage.getUrl())
-                .build();
-
-        tempImageRepository.delete(tempImage);
-
-        return imageRepository.save(image);
-    }
 
     public Image saveImage(MultipartFile file) {
         try {
@@ -73,25 +35,6 @@ public class DataService {
                     .build();
 
             return imageRepository.save(image);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    //TODO: разобраться с необходимостью временных изображений
-    public TempImage uploadTempImage(MultipartFile file) {
-        try {
-            var code = UUID.randomUUID().toString();
-
-            var image = TempImage.builder()
-                    .code(code)
-                    .name(file.getOriginalFilename())
-                    .type(file.getContentType())
-                    .data(ImageUtil.compress(file))
-                    .url(createImageLink(code))
-                    .build();
-
-            return tempImageRepository.save(image);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

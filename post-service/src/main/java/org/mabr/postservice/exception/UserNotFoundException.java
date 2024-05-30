@@ -1,4 +1,4 @@
-package org.mabr.userservice.exception;
+package org.mabr.postservice.exception;
 
 public class UserNotFoundException extends RuntimeException {
 

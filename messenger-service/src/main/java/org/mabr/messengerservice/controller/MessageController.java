@@ -17,10 +17,9 @@ public class MessageController {
 
     private final MessageService service;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageDto messageDto) {
         service.sendMessage(messageDto);
         return ResponseEntity.ok(HttpStatus.ACCEPTED);
     }
-
 }

@@ -8,6 +8,7 @@ import org.mabr.messengerservice.repository.ChatRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,27 +18,31 @@ public class ChatService {
     private final ChatRepository chatRepository;
 
     public void createChat(ChatDto chatDto) {
+        var chatId = UUID.randomUUID().toString();
+
         var chatForOwner = Chat.builder()
+                .chatId(chatId)
                 .createdAt(chatDto.createdAt())
-                .ownerUsername(chatDto.ownerUsername())
+                .senderUsername(chatDto.ownerUsername())
                 .recipientUsername(chatDto.recipientUsername())
                 .build();
 
         var chatForRecipient = Chat.builder()
+                .chatId(chatId)
                 .createdAt(chatDto.createdAt())
-                .ownerUsername(chatDto.recipientUsername())
+                .senderUsername(chatDto.recipientUsername())
                 .recipientUsername(chatDto.ownerUsername())
                 .build();
 
-        log.info("Chats was created for {}, {}", chatForOwner.getOwnerUsername(), chatForRecipient.getOwnerUsername());
+        log.info("Chats was created with id {}", chatId);
         chatRepository.saveAll(List.of(chatForOwner, chatForRecipient));
     }
 
     public List<Chat> getChatList(String username) {
-        return chatRepository.findByOwnerUsername(username);
+        return chatRepository.findBySenderUsername(username);
     }
 
-    public Chat getChatById(int chatId) {
-        return chatRepository.findById(chatId).orElseThrow();
+    public Chat getChatById(String chatId, String senderUsername) {
+        return chatRepository.findByChatIdAndSenderUsername(chatId, senderUsername).orElseThrow();
     }
 }

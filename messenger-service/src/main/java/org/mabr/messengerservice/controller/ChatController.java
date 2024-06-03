@@ -18,8 +18,8 @@ public class ChatController {
     private final ChatService service;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Chat> getChat(@PathVariable int id) {
-        var chat = service.getChatById(id);
+    public ResponseEntity<Chat> getChat(@RequestHeader("authorUser") String username, @PathVariable String id) {
+        var chat = service.getChatById(id, username);
         return ResponseEntity.ok(chat);
     }
 

@@ -19,8 +19,14 @@ public class MessageNotification {
     private int id;
 
     @Column(nullable = false)
-    private String username;
+    private String senderUsername;
+
+    @Column(nullable = false)
+    private String recipientUsername;
 
     @Column(nullable = false)
     private String message;
+
+    @Column(nullable = false)
+    private String type;
 }

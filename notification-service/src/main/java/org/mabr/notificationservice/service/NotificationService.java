@@ -17,14 +17,16 @@ public class NotificationService {
 
     public void saveMessage(MessageSentEvent messageSentEvent) {
         var message = MessageNotification.builder()
-                .username(messageSentEvent.getUsername())
+                .senderUsername(messageSentEvent.getSenderUsername())
+                .recipientUsername(messageSentEvent.getRecipientUsername())
                 .message(messageSentEvent.getMessage())
+                .type(messageSentEvent.getMessageType())
                 .build();
 
         messageNotificationRepository.save(message);
     }
 
     public List<MessageNotification> getMessageNotification(String username) {
-        return messageNotificationRepository.findAllByUsername(username);
+        return messageNotificationRepository.findAllByRecipientUsername(username);
     }
 }

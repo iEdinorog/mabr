@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MessageNotificationRepository extends JpaRepository<MessageNotification, Integer> {
-    List<MessageNotification> findAllByUsername(String username);
+    List<MessageNotification> findAllByRecipientUsername(String username);
 }

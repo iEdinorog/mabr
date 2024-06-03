@@ -9,7 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MessageSentEvent {
 
-    private String username;
+    private String senderUsername;
+
+    private String recipientUsername;
 
     private String message;
+
+    private String messageType;
 }

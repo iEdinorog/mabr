@@ -1,10 +1,12 @@
 package org.mabr.messengerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.List;
 
 @Entity
 @Table
@@ -19,14 +21,14 @@ public class Chat {
     private int id;
 
     @Column(nullable = false)
+    private String chatId;
+
+    @Column(nullable = false)
     private Instant createdAt;
 
     @Column(nullable = false)
-    private String ownerUsername;
+    private String senderUsername;
 
     @Column(nullable = false)
     private String recipientUsername;
-
-    @OneToMany
-    private List<Message> messages;
 }

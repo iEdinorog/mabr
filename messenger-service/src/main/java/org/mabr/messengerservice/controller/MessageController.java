@@ -11,21 +11,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/messages")
+@RequestMapping("/chats")
 @RequiredArgsConstructor
 public class MessageController {
 
     private final MessageService service;
 
-    @PostMapping
+    @PostMapping("/messages")
     public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageDto messageDto) {
         service.sendMessage(messageDto);
         return ResponseEntity.ok(HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("{chatId}")
-    public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId) {
-        var messages = service.getMessages(chatId);
+    @GetMapping("{chatId}/messages")
+    public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId,
+                                                     @RequestParam(defaultValue = "0") int page,
+                                                     @RequestParam(defaultValue=  "10") int size) {
+        var messages = service.getMessages(chatId, page, size);
         return ResponseEntity.ok(messages);
     }
 }

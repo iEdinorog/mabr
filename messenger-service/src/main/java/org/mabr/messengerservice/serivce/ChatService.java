@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mabr.messengerservice.dto.ChatDto;
 import org.mabr.messengerservice.entity.Chat;
 import org.mabr.messengerservice.repository.ChatRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,6 +43,7 @@ public class ChatService {
         return chatRepository.findBySenderUsername(username);
     }
 
+    @Cacheable(value = "message")
     public Chat getChatById(String chatId, String senderUsername) {
         return chatRepository.findByChatIdAndSenderUsername(chatId, senderUsername).orElseThrow();
     }

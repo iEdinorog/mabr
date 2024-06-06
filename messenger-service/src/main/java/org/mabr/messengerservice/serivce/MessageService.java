@@ -7,6 +7,7 @@ import org.mabr.messengerservice.entity.Chat;
 import org.mabr.messengerservice.entity.Message;
 import org.mabr.messengerservice.event.MessageSentEvent;
 import org.mabr.messengerservice.repository.MessageRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,8 @@ public class MessageService {
                 chat.getSenderUsername(), chat.getRecipientUsername(), messageContent, message.getType().name()));
     }
 
-    public List<Message> getMessages(String chatId) {
-        return messageRepository.findByChatId(chatId).orElseThrow();
+    public List<Message> getMessages(String chatId, int page, int size) {
+        log.info("get message from db");
+        return messageRepository.findByChatId(chatId, PageRequest.of(page, size)).orElseThrow();
     }
 }

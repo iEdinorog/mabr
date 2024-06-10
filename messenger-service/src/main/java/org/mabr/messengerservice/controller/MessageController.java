@@ -26,7 +26,7 @@ public class MessageController {
     @GetMapping("{chatId}/messages")
     public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId,
                                                      @RequestParam(defaultValue = "0") int page,
-                                                     @RequestParam(defaultValue=  "10") int size) {
+                                                     @RequestParam(defaultValue = "10") int size) {
         var messages = service.getMessages(chatId, page, size);
         return ResponseEntity.ok(messages);
     }

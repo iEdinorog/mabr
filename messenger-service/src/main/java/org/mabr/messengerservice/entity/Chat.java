@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @Entity
@@ -14,7 +15,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Chat {
+public class Chat implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

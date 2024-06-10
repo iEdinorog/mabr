@@ -43,7 +43,6 @@ public class ChatService {
         return chatRepository.findBySenderUsername(username);
     }
 
-    @Cacheable(value = "message")
     public Chat getChatById(String chatId, String senderUsername) {
         return chatRepository.findByChatIdAndSenderUsername(chatId, senderUsername).orElseThrow();
     }

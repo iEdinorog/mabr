@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: messenger-service
   datasource:
@@ -11,7 +13,7 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
 server:
-  port: 8082
+  port: 0
   servlet:
     context-path: /messenger/api/
 
@@ -19,3 +21,12 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+logging:
+  level:
+    io:
+      minio: DEBUG
+minio:
+  bucket: ${MINIO_BUCKET}
+  url: ${MINIO_URL}
+  accessKey: ${MINIO_ACCESS_KEY}
+  secretKey: ${MINIO_SECRET_KEY}

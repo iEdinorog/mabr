@@ -30,7 +30,7 @@ jwt:
   secret: 5367566B59703EQWRTRGFBP92F423F4528482B4D6251655468576D5A71383482
 
 server:
-  port: 8083
+  port: 0
   servlet:
     context-path: /post/api
 

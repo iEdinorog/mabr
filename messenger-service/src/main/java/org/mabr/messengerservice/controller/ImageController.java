@@ -17,7 +17,7 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping()
-    public ResponseEntity<?> upload(@RequestParam MultipartFile file) {
+    public ResponseEntity<String> upload(@RequestParam MultipartFile file) {
         var fileName = imageService.upload(file);
         return ResponseEntity.ok(fileName);
     }
@@ -29,5 +29,11 @@ public class ImageController {
         header.setContentType(MediaType.IMAGE_JPEG);
 
         return new ResponseEntity<>(image, header, HttpStatus.OK);
+    }
+
+    @PostMapping("/{imageName}/delete")
+    public ResponseEntity<?> delete(@PathVariable String imageName) {
+        imageService.deleteImage(imageName);
+        return ResponseEntity.ok("file was deleted successfully");
     }
 }

@@ -1,16 +1,22 @@
 package org.mabr.messengerservice.serivce;
 
 import io.minio.*;
+import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import net.coobird.thumbnailator.Thumbnails;
 import org.mabr.messengerservice.exception.ImageUploadException;
 import org.mabr.messengerservice.props.MinioProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @Service
@@ -35,11 +41,8 @@ public class ImageService {
 
         InputStream inputStream;
 
-        try {
-            inputStream = file.getInputStream();
-        } catch (IOException e) {
-            throw new ImageUploadException("Image upload failed" + e.getMessage());
-        }
+        inputStream = compressImage(file);
+
         saveImage(inputStream, fileName);
 
         return createImageLink(fileName);
@@ -77,6 +80,19 @@ public class ImageService {
                 .build());
     }
 
+    public void deleteImage(String imageName) {
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(minioProperties.getBucket())
+                    .object(imageName)
+                    .build());
+        } catch (InvalidKeyException | NoSuchAlgorithmException | ErrorResponseException |
+                 InsufficientDataException | InternalException | InvalidResponseException | IOException |
+                 ServerException | XmlParserException e) {
+            throw new ImageUploadException("Image deletion failed" + e.getMessage());
+        }
+    }
+
     public byte[] getImage(String imageName) {
         byte[] data = new byte[1024];
         try {
@@ -98,8 +114,25 @@ public class ImageService {
         }
     }
 
-    public String createImageLink(String imageName) {
+    private String createImageLink(String imageName) {
         return "http://localhost:8080/messenger/api/image/" + imageName;
     }
 
+    private InputStream compressImage(MultipartFile file) {
+        var outputStream = new ByteArrayOutputStream();
+
+        try {
+            var bufferedImage = ImageIO.read(file.getInputStream());
+
+            Thumbnails.of(bufferedImage)
+                    .scale(1.0)
+                    .outputQuality(0.1)
+                    .outputFormat(getExtension(file))
+                    .toOutputStream(outputStream);
+
+            return new ByteArrayInputStream(outputStream.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

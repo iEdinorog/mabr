@@ -1,38 +1,31 @@
 package org.mabr.messengerservice.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.List;
 
+@Data
 @Entity
 @Table
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Message {
+public class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(nullable = false)
-    private String chatId;
-
-    @Column(nullable = false)
-    private Instant sentAt;
-
-    @Column(nullable = false)
-    private String senderUsername;
+    private Instant addedAt;
 
     @Column(nullable = false)
     private String content;
 
     @Column(nullable = false)
-    private MessageType type;
-
-    @OneToMany()
-    private List<Attachment> attachments;
+    private AttachmentType type;
 }

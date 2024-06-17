@@ -3,6 +3,7 @@ package org.mabr.messengerservice.serivce;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mabr.messengerservice.dto.MessageDto;
+import org.mabr.messengerservice.entity.Attachment;
 import org.mabr.messengerservice.entity.Chat;
 import org.mabr.messengerservice.entity.Message;
 import org.mabr.messengerservice.event.MessageSentEvent;
@@ -12,6 +13,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -27,22 +29,33 @@ public class MessageService {
     public void sendMessage(MessageDto messageDto) {
         var chat = chatService.getChatById(messageDto.chatId(), messageDto.senderUsername());
 
+        var content = StringUtils.hasText(messageDto.content()) ? messageDto.content() : "";
+
+        var attachments = messageDto.attachments().stream()
+                .map(dto -> Attachment.builder()
+                        .addedAt(messageDto.sentAt())
+                        .content(dto.content())
+                        .type(dto.type())
+                        .build())
+                .toList();
+
         var message = Message.builder()
                 .chatId(chat.getChatId())
                 .sentAt(messageDto.sentAt())
                 .senderUsername(chat.getSenderUsername())
-                .content(messageDto.content())
+                .content(content)
                 .type(messageDto.type())
+                .attachments(attachments)
                 .build();
 
         log.info("{} sent message to chat {}", message.getSenderUsername(), chat.getChatId());
         message = messageRepository.save(message);
 
         log.info("Sending message to notification service");
-        sendMessageToNotification(chat, message);
+        sendMessageNotification(chat, message);
     }
 
-    private void sendMessageToNotification(Chat chat, Message message) {
+    private void sendMessageNotification(Chat chat, Message message) {
         var messageContent = switch (message.getType()) {
             case PHOTO -> "Photo";
             case VIDEO -> "Video";

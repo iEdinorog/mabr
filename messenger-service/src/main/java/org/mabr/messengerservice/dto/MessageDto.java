@@ -3,6 +3,7 @@ package org.mabr.messengerservice.dto;
 import org.mabr.messengerservice.entity.MessageType;
 
 import java.time.Instant;
+import java.util.List;
 
 public record MessageDto(
 
@@ -14,6 +15,8 @@ public record MessageDto(
 
         String content,
 
-        MessageType type
+        MessageType type,
+
+        List<AttachmentDto> attachments
 ) {
 }

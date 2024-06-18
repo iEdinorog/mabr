@@ -2,19 +2,24 @@ package org.mabr.messengerservice.serivce;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mabr.messengerservice.dto.AttachmentDto;
 import org.mabr.messengerservice.dto.MessageDto;
 import org.mabr.messengerservice.entity.Attachment;
 import org.mabr.messengerservice.entity.Chat;
 import org.mabr.messengerservice.entity.Message;
 import org.mabr.messengerservice.event.MessageSentEvent;
+import org.mabr.messengerservice.repository.AttachmentRepository;
 import org.mabr.messengerservice.repository.MessageRepository;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +28,7 @@ import java.util.List;
 public class MessageService {
 
     private final MessageRepository messageRepository;
+    private final AttachmentRepository attachmentRepository;
     private final ChatService chatService;
     private final KafkaTemplate<String, MessageSentEvent> kafkaTemplate;
 
@@ -31,13 +37,7 @@ public class MessageService {
 
         var content = StringUtils.hasText(messageDto.content()) ? messageDto.content() : "";
 
-        var attachments = messageDto.attachments().stream()
-                .map(dto -> Attachment.builder()
-                        .addedAt(messageDto.sentAt())
-                        .content(dto.content())
-                        .type(dto.type())
-                        .build())
-                .toList();
+        var attachments = saveAttachments(messageDto.attachments());
 
         var message = Message.builder()
                 .chatId(chat.getChatId())
@@ -53,6 +53,21 @@ public class MessageService {
 
         log.info("Sending message to notification service");
         sendMessageNotification(chat, message);
+    }
+
+    private List<Attachment> saveAttachments(List<AttachmentDto> attachmentDtos) {
+        var attachments = new ArrayList<Attachment>();
+        for (var dto : attachmentDtos) {
+            var attachment = Attachment.builder()
+                    .addedAt(Instant.now())
+                    .content(dto.content())
+                    .type(dto.type())
+                    .build();
+
+            attachments.add(attachment);
+        }
+
+        return attachmentRepository.saveAll(attachments);
     }
 
     private void sendMessageNotification(Chat chat, Message message) {
@@ -76,6 +91,8 @@ public class MessageService {
     @CachePut(value = "messages")
     public List<Message> fetchAndCacheMessages(String chatId, int page, int size) {
         System.out.println("get message from db");
-        return messageRepository.findByChatId(chatId, PageRequest.of(page, size)).orElseThrow();
+        return messageRepository.findByChatId(chatId,
+                PageRequest.of(page, size, Sort.by("sentAt").descending()))
+                .orElseThrow();
     }
 }

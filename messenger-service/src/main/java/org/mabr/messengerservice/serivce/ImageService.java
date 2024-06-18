@@ -126,7 +126,7 @@ public class ImageService {
 
             Thumbnails.of(bufferedImage)
                     .scale(1.0)
-                    .outputQuality(0.1)
+                    .outputQuality(0.4)
                     .outputFormat(getExtension(file))
                     .toOutputStream(outputStream);
 

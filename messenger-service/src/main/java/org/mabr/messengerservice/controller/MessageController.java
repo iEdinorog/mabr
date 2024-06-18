@@ -2,6 +2,7 @@ package org.mabr.messengerservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.mabr.messengerservice.dto.MessageDto;
+import org.mabr.messengerservice.entity.Attachment;
 import org.mabr.messengerservice.entity.Message;
 import org.mabr.messengerservice.serivce.MessageService;
 import org.springframework.http.HttpStatus;
@@ -30,4 +31,13 @@ public class MessageController {
         var messages = service.getMessages(chatId, page, size);
         return ResponseEntity.ok(messages);
     }
+
+    @GetMapping("{chatId}/attachments/images")
+    public ResponseEntity<List<Attachment>> getImagesAttachments(@PathVariable String chatId,
+                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "10") int size) {
+        var images = service.getImagesAttachments(chatId, page, size);
+        return ResponseEntity.ok(images);
+    }
+
 }

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Message {
+public class Message extends MessageStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

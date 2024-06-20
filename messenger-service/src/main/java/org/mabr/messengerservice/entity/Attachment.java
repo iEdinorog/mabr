@@ -1,5 +1,6 @@
 package org.mabr.messengerservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,4 +32,9 @@ public class Attachment {
 
     @Column(nullable = false)
     private AttachmentType type;
+
+    @ManyToOne()
+    @JoinColumn(name = "message_id")
+    @JsonIgnore
+    private Message message;
 }

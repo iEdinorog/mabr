@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table
 @Data
@@ -33,6 +35,6 @@ public class Message extends MessageStatus {
     @Column(nullable = false)
     private MessageType type;
 
-    @OneToMany()
-    private List<Attachment> attachments;
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attachment> attachments = new ArrayList<>();
 }

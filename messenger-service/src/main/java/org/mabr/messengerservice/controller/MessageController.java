@@ -2,6 +2,7 @@ package org.mabr.messengerservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.mabr.messengerservice.dto.MessageDto;
+import org.mabr.messengerservice.dto.UpdateMessageDto;
 import org.mabr.messengerservice.entity.Attachment;
 import org.mabr.messengerservice.entity.Message;
 import org.mabr.messengerservice.serivce.MessageService;
@@ -21,7 +22,7 @@ public class MessageController {
     @PostMapping("/messages")
     public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageDto messageDto) {
         service.sendMessage(messageDto);
-        return ResponseEntity.ok(HttpStatus.ACCEPTED);
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
     @GetMapping("{chatId}/messages")
@@ -30,6 +31,12 @@ public class MessageController {
                                                      @RequestParam(defaultValue = "10") int size) {
         var messages = service.getMessages(chatId, page, size);
         return ResponseEntity.ok(messages);
+    }
+
+    @PostMapping("/message/update")
+    public ResponseEntity<Message> updateMessage(@RequestBody UpdateMessageDto messageDto) {
+        var message = service.updateMessage(messageDto);
+        return ResponseEntity.ok(message);
     }
 
     @GetMapping("{chatId}/attachments/images")

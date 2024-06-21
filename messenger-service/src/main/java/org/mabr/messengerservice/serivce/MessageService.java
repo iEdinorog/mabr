@@ -33,7 +33,6 @@ public class MessageService {
     private final ChatService chatService;
     private final KafkaTemplate<String, MessageSentEvent> kafkaTemplate;
 
-
     public void sendMessage(MessageDto messageDto) {
         var chat = chatService.getChatById(messageDto.chatId(), messageDto.senderUsername());
         var message = saveMessage(chat, messageDto);

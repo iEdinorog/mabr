@@ -1,4 +1,4 @@
-package org.mabr.messengerservice.serivce;
+package org.mabr.messengerservice.serivce.file;
 
 import io.minio.*;
 import io.minio.errors.*;

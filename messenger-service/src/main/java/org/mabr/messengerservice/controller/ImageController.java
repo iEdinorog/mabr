@@ -22,6 +22,12 @@ public class ImageController {
         return ResponseEntity.ok(fileName);
     }
 
+    @PostMapping("/{imageName}/delete")
+    public ResponseEntity<?> delete(@PathVariable String imageName) {
+        imageService.deleteImage(imageName);
+        return ResponseEntity.ok("file was deleted successfully");
+    }
+
     @GetMapping("/{imageName}")
     public ResponseEntity<byte[]> getImage(@PathVariable String imageName) {
         var image = imageService.getImage(imageName);
@@ -31,9 +37,4 @@ public class ImageController {
         return new ResponseEntity<>(image, header, HttpStatus.OK);
     }
 
-    @PostMapping("/{imageName}/delete")
-    public ResponseEntity<?> delete(@PathVariable String imageName) {
-        imageService.deleteImage(imageName);
-        return ResponseEntity.ok("file was deleted successfully");
-    }
 }

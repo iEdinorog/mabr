@@ -35,6 +35,12 @@ public class Message extends MessageStatus {
     @Column(nullable = false)
     private MessageType type;
 
+    @OneToOne
+    private Message reply;
+
+    @OneToMany
+    private List<Message> forwarded = new ArrayList<>();
+
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attachment> attachments = new ArrayList<>();
 }

@@ -1,7 +1,9 @@
 package org.mabr.messengerservice.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.mabr.messengerservice.dto.ForwardMessageDto;
 import org.mabr.messengerservice.dto.MessageDto;
+import org.mabr.messengerservice.dto.ReplyMessageDto;
 import org.mabr.messengerservice.dto.UpdateMessageDto;
 import org.mabr.messengerservice.entity.Attachment;
 import org.mabr.messengerservice.entity.AttachmentType;
@@ -28,18 +30,32 @@ public class MessageController {
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
+    @PostMapping("/message/update")
+    public ResponseEntity<Message> updateMessage(@RequestBody UpdateMessageDto messageDto) {
+        var message = messageService.updateMessage(messageDto);
+        return ResponseEntity.ok(message);
+    }
+
+    @PostMapping("{chatId}/message/reply")
+    public ResponseEntity<Message> replyToMessage(@PathVariable String chatId, @RequestBody ReplyMessageDto dto) {
+        var message = messageService.replyToMessage(chatId, dto);
+
+        return ResponseEntity.ok(message);
+    }
+
+    @PostMapping("{chatId}/message/forward")
+    public ResponseEntity<Message> forwardMessage(@PathVariable String chatId, @RequestBody ForwardMessageDto dto) {
+        var message = messageService.forwardMessage(chatId, dto);
+
+        return ResponseEntity.ok(message);
+    }
+
     @GetMapping("{chatId}/messages")
     public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId,
                                                      @RequestParam(defaultValue = "0") int page,
                                                      @RequestParam(defaultValue = "10") int size) {
         var messages = messageService.getMessages(chatId, page, size);
         return ResponseEntity.ok(messages);
-    }
-
-    @PostMapping("/message/update")
-    public ResponseEntity<Message> updateMessage(@RequestBody UpdateMessageDto messageDto) {
-        var message = messageService.updateMessage(messageDto);
-        return ResponseEntity.ok(message);
     }
 
     @GetMapping("{chatId}/attachments")

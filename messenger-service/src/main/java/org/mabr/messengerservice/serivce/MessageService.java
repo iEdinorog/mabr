@@ -1,8 +1,11 @@
 package org.mabr.messengerservice.serivce;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mabr.messengerservice.dto.ForwardMessageDto;
 import org.mabr.messengerservice.dto.MessageDto;
+import org.mabr.messengerservice.dto.ReplyMessageDto;
 import org.mabr.messengerservice.dto.UpdateMessageDto;
 import org.mabr.messengerservice.entity.Chat;
 import org.mabr.messengerservice.entity.Message;
@@ -17,6 +20,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -30,6 +34,7 @@ public class MessageService {
     private final AttachmentService attachmentService;
     private final KafkaTemplate<String, MessageSentEvent> kafkaTemplate;
 
+    @Transactional
     public void sendMessage(MessageDto messageDto) {
         var chat = chatService.getChatById(messageDto.chatId(), messageDto.senderUsername());
         var message = saveMessage(chat, messageDto);
@@ -51,7 +56,7 @@ public class MessageService {
 
     @CachePut(value = "messages")
     public Message updateMessage(UpdateMessageDto messageDto) {
-        var message = messageRepository.findById(messageDto.messageId()).orElseThrow(NoSuchElementException::new);
+        var message = getMessageById(messageDto.messageId());
 
         message.setContent(messageDto.content());
         message.setType(messageDto.type());
@@ -69,7 +74,7 @@ public class MessageService {
 
         var message = Message.builder()
                 .chatId(chat.getChatId())
-                .sentAt(messageDto.sentAt())
+                .sentAt(Instant.now())
                 .senderUsername(chat.getSenderUsername())
                 .content(content)
                 .type(messageDto.type())
@@ -82,6 +87,49 @@ public class MessageService {
 
         log.info("{} sent message to chat {}", message.getSenderUsername(), chat.getChatId());
         return messageRepository.save(message);
+    }
+
+    public Message getMessageById(int id) {
+        return messageRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Message not found with id " + id));
+    }
+
+    public Message replyToMessage(String chatId, ReplyMessageDto dto) {
+        var originalMessage = getMessageById(dto.originalMessageId());
+
+        var replyMessage = Message.builder()
+                .chatId(chatId)
+                .sentAt(Instant.now())
+                .senderUsername(dto.message().senderUsername())
+                .content(dto.message().content())
+                .type(dto.message().type())
+                .reply(originalMessage)
+                .build();
+
+        var attachments = attachmentService.buildAttachments(replyMessage, dto.message().attachments());
+        replyMessage.setAttachments(attachments);
+
+        return messageRepository.save(replyMessage);
+    }
+
+    public Message forwardMessage(String chatId, ForwardMessageDto dto) {
+        var forwardedMessages  = dto.forwardedMessagesIds().stream()
+                .map(this::getMessageById)
+                .toList();
+
+        var forwardMessage = Message.builder()
+                .chatId(chatId)
+                .sentAt(Instant.now())
+                .senderUsername(dto.message().senderUsername())
+                .content(dto.message().content())
+                .type(dto.message().type())
+                .forwarded(forwardedMessages)
+                .build();
+
+        var attachments = attachmentService.buildAttachments(forwardMessage, dto.message().attachments());
+        forwardMessage.setAttachments(attachments);
+
+        return messageRepository.save(forwardMessage);
     }
 
     private void sendMessageNotification(Chat chat, Message message) {

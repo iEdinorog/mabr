@@ -22,8 +22,9 @@ public class VideoController {
 
     @PostMapping
     public ResponseEntity<String> save(@RequestParam MultipartFile file) {
-        var uuid = videoService.save(file);
-        return ResponseEntity.ok(uuid);
+        var url = videoService.save(file);
+
+        return ResponseEntity.ok(url);
     }
 
     @GetMapping("/{uuid}")
@@ -40,6 +41,13 @@ public class VideoController {
                 .header(CONTENT_LENGTH, calculateContentLengthHeader(parsedRange, chunkWithMetadata.metadata().getSize()))
                 .header(CONTENT_RANGE, constructContentRangeHeader(parsedRange, chunkWithMetadata.metadata().getSize()))
                 .body(chunkWithMetadata.chunk());
+    }
+
+    @PostMapping("/{uuid}/delete")
+    public ResponseEntity<?> deleteVideo(@PathVariable String uuid) {
+        videoService.deleteVideo(uuid);
+
+        return ResponseEntity.ok().build();
     }
 
     private String calculateContentLengthHeader(Range range, long fileSize) {

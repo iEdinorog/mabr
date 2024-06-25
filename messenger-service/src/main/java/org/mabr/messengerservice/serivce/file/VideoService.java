@@ -31,7 +31,7 @@ public class VideoService {
         videoFileMetadataRepository.save(metadata);
         videoStorageService.save(file, fileUuid);
 
-        return fileUuid;
+        return createVideoUrl(fileUuid);
     }
 
     public ChunkWithMetadata fetchChunk(String uuid, Range range) {
@@ -49,6 +49,18 @@ public class VideoService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String createVideoUrl(String uuid) {
+        return "http://localhost:8080/messenger/api/video/" + uuid;
+    }
+
+    @Transactional
+    public void deleteVideo(String uuid) {
+        var metadata = videoFileMetadataRepository.findById(uuid).orElseThrow();
+
+        videoFileMetadataRepository.delete(metadata);
+        videoStorageService.delete(metadata.getId());
     }
 
     public record ChunkWithMetadata(

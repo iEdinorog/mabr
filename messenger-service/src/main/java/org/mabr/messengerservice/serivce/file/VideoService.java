@@ -1,5 +1,6 @@
 package org.mabr.messengerservice.serivce.file;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mabr.messengerservice.entity.VideoFileMetadata;
@@ -18,6 +19,7 @@ public class VideoService {
     private final VideoStorageService videoStorageService;
     private final VideoFileMetadataRepository videoFileMetadataRepository;
 
+    @Transactional
     public String save(MultipartFile file) {
         var fileUuid = UUID.randomUUID().toString();
         var metadata = VideoFileMetadata.builder()
@@ -41,8 +43,8 @@ public class VideoService {
     private byte[] readChunk(String uuid, Range range, long fileSize) {
         var startPosition = range.getRangeStart();
         var endPosition = range.getRangeEnd(fileSize);
-        var chunkSize = (endPosition - startPosition + 1);
-        try (InputStream inputStream = videoStorageService.getInputStream(uuid, startPosition, chunkSize)){
+        var chunkSize = (int) (endPosition - startPosition + 1);
+        try (InputStream inputStream = videoStorageService.getInputStream(uuid, startPosition, chunkSize)) {
             return inputStream.readAllBytes();
         } catch (Exception e) {
             throw new RuntimeException(e);

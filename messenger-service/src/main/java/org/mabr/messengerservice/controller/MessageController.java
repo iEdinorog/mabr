@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.mabr.messengerservice.dto.MessageDto;
 import org.mabr.messengerservice.dto.UpdateMessageDto;
 import org.mabr.messengerservice.entity.Attachment;
+import org.mabr.messengerservice.entity.AttachmentType;
 import org.mabr.messengerservice.entity.Message;
+import org.mabr.messengerservice.serivce.AttachmentService;
 import org.mabr.messengerservice.serivce.MessageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +19,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MessageController {
 
-    private final MessageService service;
+    private final MessageService messageService;
+    private final AttachmentService attachmentService;
 
     @PostMapping("/messages")
     public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageDto messageDto) {
-        service.sendMessage(messageDto);
+        messageService.sendMessage(messageDto);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
@@ -29,21 +32,22 @@ public class MessageController {
     public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId,
                                                      @RequestParam(defaultValue = "0") int page,
                                                      @RequestParam(defaultValue = "10") int size) {
-        var messages = service.getMessages(chatId, page, size);
+        var messages = messageService.getMessages(chatId, page, size);
         return ResponseEntity.ok(messages);
     }
 
     @PostMapping("/message/update")
     public ResponseEntity<Message> updateMessage(@RequestBody UpdateMessageDto messageDto) {
-        var message = service.updateMessage(messageDto);
+        var message = messageService.updateMessage(messageDto);
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("{chatId}/attachments/images")
-    public ResponseEntity<List<Attachment>> getImagesAttachments(@PathVariable String chatId,
-                                                                 @RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(defaultValue = "10") int size) {
-        var images = service.getImagesAttachments(chatId, page, size);
+    @GetMapping("{chatId}/attachments")
+    public ResponseEntity<List<Attachment>> getAttachments(@PathVariable String chatId,
+                                                           @RequestParam AttachmentType type,
+                                                           @RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "10") int size) {
+        var images = attachmentService.getAttachments(chatId, type, page, size);
         return ResponseEntity.ok(images);
     }
 

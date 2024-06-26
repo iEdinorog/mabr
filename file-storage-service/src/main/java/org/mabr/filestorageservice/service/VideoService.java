@@ -1,10 +1,11 @@
-package org.mabr.messengerservice.serivce.file;
+package org.mabr.filestorageservice.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mabr.messengerservice.entity.VideoFileMetadata;
-import org.mabr.messengerservice.repository.VideoFileMetadataRepository;
+import org.mabr.filestorageservice.entity.VideoFileMetadata;
+import org.mabr.filestorageservice.repository.VideoFileMetadataRepository;
+import org.mabr.filestorageservice.utils.Range;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

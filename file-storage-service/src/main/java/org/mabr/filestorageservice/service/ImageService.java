@@ -1,12 +1,12 @@
-package org.mabr.messengerservice.serivce.file;
+package org.mabr.filestorageservice.service;
 
 import io.minio.*;
 import io.minio.errors.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.coobird.thumbnailator.Thumbnails;
-import org.mabr.messengerservice.exception.ImageUploadException;
-import org.mabr.messengerservice.props.MinioProperties;
+import org.mabr.filestorageservice.exception.ImageUploadException;
+import org.mabr.filestorageservice.props.MinioProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -36,16 +36,16 @@ public class MessageController {
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("{chatId}/message/reply")
-    public ResponseEntity<Message> replyToMessage(@PathVariable String chatId, @RequestBody ReplyMessageDto dto) {
-        var message = messageService.replyToMessage(chatId, dto);
+    @PostMapping("/message/reply")
+    public ResponseEntity<Message> replyToMessage(@RequestBody ReplyMessageDto dto) {
+        var message = messageService.replyToMessage(dto);
 
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("{chatId}/message/forward")
-    public ResponseEntity<Message> forwardMessage(@PathVariable String chatId, @RequestBody ForwardMessageDto dto) {
-        var message = messageService.forwardMessage(chatId, dto);
+    @PostMapping("/message/forward")
+    public ResponseEntity<Message> forwardMessage(@RequestBody ForwardMessageDto dto) {
+        var message = messageService.forwardMessage(dto);
 
         return ResponseEntity.ok(message);
     }
@@ -67,4 +67,10 @@ public class MessageController {
         return ResponseEntity.ok(images);
     }
 
+    @PostMapping("/message/{messageId}/delete")
+    public ResponseEntity<?> deleteMessage(@PathVariable int messageId) {
+        messageService.deleteMessage(messageId);
+
+        return ResponseEntity.ok().build();
+    }
 }

@@ -12,15 +12,10 @@ spring:
       ddl-auto: update
   kafka:
     bootstrap-servers: localhost:9092
-  servlet:
-    multipart:
-      max-request-size: 10MB
-      max-file-size: 10MB
 server:
   port: 0
   servlet:
     context-path: /messenger/api/
-
 eureka:
   client:
     service-url:
@@ -29,9 +24,3 @@ logging:
   level:
     io:
       minio: DEBUG
-minio:
-  bucket: ${MINIO_BUCKET}
-  url: ${MINIO_URL}
-  accessKey: ${MINIO_ACCESS_KEY}
-  secretKey: ${MINIO_SECRET_KEY}
-  put-object-part-size: 5242880

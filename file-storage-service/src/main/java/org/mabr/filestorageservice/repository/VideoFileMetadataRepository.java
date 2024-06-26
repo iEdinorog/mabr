@@ -1,6 +1,7 @@
-package org.mabr.messengerservice.repository;
+package org.mabr.filestorageservice.repository;
 
-import org.mabr.messengerservice.entity.VideoFileMetadata;
+
+import org.mabr.filestorageservice.entity.VideoFileMetadata;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VideoFileMetadataRepository extends JpaRepository<VideoFileMetadata, String> {

@@ -1,8 +1,8 @@
-package org.mabr.messengerservice.controller;
+package org.mabr.filestorageservice.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.mabr.messengerservice.serivce.file.Range;
-import org.mabr.messengerservice.serivce.file.VideoService;
+import org.mabr.filestorageservice.utils.Range;
+import org.mabr.filestorageservice.service.VideoService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

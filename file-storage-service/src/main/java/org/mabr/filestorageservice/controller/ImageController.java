@@ -1,7 +1,8 @@
-package org.mabr.messengerservice.controller;
+package org.mabr.filestorageservice.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.mabr.messengerservice.serivce.file.ImageService;
+
+import org.mabr.filestorageservice.service.ImageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

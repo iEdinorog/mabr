@@ -1,8 +1,8 @@
-package org.mabr.messengerservice.config;
+package org.mabr.filestorageservice.config;
 
 import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
-import org.mabr.messengerservice.props.MinioProperties;
+import org.mabr.filestorageservice.props.MinioProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

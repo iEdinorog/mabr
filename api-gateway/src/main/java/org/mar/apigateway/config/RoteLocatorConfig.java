@@ -36,6 +36,10 @@ public class RoteLocatorConfig {
                         .filters(f -> f.filter(authenticationFilter.apply(new Config())))
                         .uri("lb://messenger-service"))
                 .route(p -> p
+                        .path("/file-storage/api/**")
+                        .filters(f -> f.filter(authenticationFilter.apply(new Config())))
+                        .uri("lb://file-storage-service"))
+                .route(p -> p
                         .path("/post/api/**")
                         .filters(f -> f.filter(authenticationFilter.apply(new Config())))
                         .uri("lb://post-service"))

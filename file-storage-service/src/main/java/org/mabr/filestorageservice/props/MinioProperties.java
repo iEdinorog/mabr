@@ -1,4 +1,4 @@
-package org.mabr.messengerservice.props;
+package org.mabr.filestorageservice.props;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

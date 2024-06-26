@@ -12,6 +12,7 @@ import org.mabr.messengerservice.entity.Message;
 import org.mabr.messengerservice.entity.MessageStatusType;
 import org.mabr.messengerservice.event.MessageSentEvent;
 import org.mabr.messengerservice.repository.MessageRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
@@ -42,19 +43,19 @@ public class MessageService {
         sendMessageNotification(chat, message);
     }
 
-    @Cacheable(value = "messages")
+    @Cacheable(value = "messages", key = "#chatId")
     public List<Message> getMessages(String chatId, int page, int size) {
         return fetchAndCacheMessages(chatId, page, size);
     }
 
-    @CachePut(value = "messages")
+    @CachePut(value = "messages", key = "#chatId")
     public List<Message> fetchAndCacheMessages(String chatId, int page, int size) {
         return messageRepository.findByChatId(chatId,
                         PageRequest.of(page, size, Sort.by("sentAt").descending()))
                 .orElseThrow();
     }
 
-    @CachePut(value = "messages")
+    @CacheEvict(value = "messages", allEntries = true)
     public Message updateMessage(UpdateMessageDto messageDto) {
         var message = getMessageById(messageDto.messageId());
 
@@ -68,7 +69,7 @@ public class MessageService {
         return messageRepository.save(message);
     }
 
-    @CachePut(value = "messages")
+    @CachePut(value = "messages", key = "#chat.id")
     public Message saveMessage(Chat chat, MessageDto messageDto) {
         var content = StringUtils.hasText(messageDto.content()) ? messageDto.content() : "";
 
@@ -94,11 +95,12 @@ public class MessageService {
                 .orElseThrow(() -> new NoSuchElementException("Message not found with id " + id));
     }
 
-    public Message replyToMessage(String chatId, ReplyMessageDto dto) {
+    @CacheEvict(value = "messages", allEntries = true)
+    public Message replyToMessage(ReplyMessageDto dto) {
         var originalMessage = getMessageById(dto.originalMessageId());
 
         var replyMessage = Message.builder()
-                .chatId(chatId)
+                .chatId(dto.message().chatId())
                 .sentAt(Instant.now())
                 .senderUsername(dto.message().senderUsername())
                 .content(dto.message().content())
@@ -112,13 +114,14 @@ public class MessageService {
         return messageRepository.save(replyMessage);
     }
 
-    public Message forwardMessage(String chatId, ForwardMessageDto dto) {
+    @CacheEvict(value = "messages", allEntries = true)
+    public Message forwardMessage(ForwardMessageDto dto) {
         var forwardedMessages  = dto.forwardedMessagesIds().stream()
                 .map(this::getMessageById)
                 .toList();
 
         var forwardMessage = Message.builder()
-                .chatId(chatId)
+                .chatId(dto.message().chatId())
                 .sentAt(Instant.now())
                 .senderUsername(dto.message().senderUsername())
                 .content(dto.message().content())
@@ -130,6 +133,11 @@ public class MessageService {
         forwardMessage.setAttachments(attachments);
 
         return messageRepository.save(forwardMessage);
+    }
+
+    @CacheEvict(value = "messages", allEntries = true)
+    public void deleteMessage(int messageId) {
+        messageRepository.deleteById(messageId);
     }
 
     private void sendMessageNotification(Chat chat, Message message) {

@@ -1,4 +1,4 @@
-package org.mabr.messengerservice.serivce.file;
+package org.mabr.filestorageservice.utils;
 
 import lombok.Builder;
 

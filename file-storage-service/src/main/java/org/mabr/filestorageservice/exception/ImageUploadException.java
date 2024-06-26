@@ -1,4 +1,4 @@
-package org.mabr.messengerservice.exception;
+package org.mabr.filestorageservice.exception;
 
 public class ImageUploadException extends RuntimeException {
 

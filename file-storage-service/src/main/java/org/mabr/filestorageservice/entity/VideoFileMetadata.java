@@ -1,4 +1,4 @@
-package org.mabr.messengerservice.entity;
+package org.mabr.filestorageservice.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -10,14 +10,13 @@ import org.mabr.messengerservice.dto.UpdateMessageDto;
 import org.mabr.messengerservice.entity.Chat;
 import org.mabr.messengerservice.entity.Message;
 import org.mabr.messengerservice.entity.MessageStatusType;
-import org.mabr.messengerservice.event.MessageSentEvent;
 import org.mabr.messengerservice.repository.MessageRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -33,14 +32,14 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final ChatService chatService;
     private final AttachmentService attachmentService;
-    private final KafkaTemplate<String, MessageSentEvent> kafkaTemplate;
+    private final NotificationService notificationService;
 
     @Transactional
     public void sendMessage(MessageDto messageDto) {
         var chat = chatService.getChatById(messageDto.chatId(), messageDto.senderUsername());
-        var message = saveMessage(chat, messageDto);
+        saveMessage(chat, messageDto);
 
-        sendMessageNotification(chat, message);
+        notificationService.sendMessage(chat, messageDto);
     }
 
     @Cacheable(value = "messages", key = "#chatId")
@@ -70,7 +69,8 @@ public class MessageService {
     }
 
     @CachePut(value = "messages", key = "#chat.id")
-    public Message saveMessage(Chat chat, MessageDto messageDto) {
+    @Async("taskExecutor")
+    public void saveMessage(Chat chat, MessageDto messageDto) {
         var content = StringUtils.hasText(messageDto.content()) ? messageDto.content() : "";
 
         var message = Message.builder()
@@ -87,7 +87,7 @@ public class MessageService {
         message.setStatusType(MessageStatusType.SENT);
 
         log.info("{} sent message to chat {}", message.getSenderUsername(), chat.getChatId());
-        return messageRepository.save(message);
+        messageRepository.save(message);
     }
 
     public Message getMessageById(int id) {
@@ -95,7 +95,6 @@ public class MessageService {
                 .orElseThrow(() -> new NoSuchElementException("Message not found with id " + id));
     }
 
-    @CacheEvict(value = "messages", allEntries = true)
     public Message replyToMessage(ReplyMessageDto dto) {
         var originalMessage = getMessageById(dto.originalMessageId());
 
@@ -114,7 +113,6 @@ public class MessageService {
         return messageRepository.save(replyMessage);
     }
 
-    @CacheEvict(value = "messages", allEntries = true)
     public Message forwardMessage(ForwardMessageDto dto) {
         var forwardedMessages  = dto.forwardedMessagesIds().stream()
                 .map(this::getMessageById)
@@ -135,22 +133,7 @@ public class MessageService {
         return messageRepository.save(forwardMessage);
     }
 
-    @CacheEvict(value = "messages", allEntries = true)
     public void deleteMessage(int messageId) {
         messageRepository.deleteById(messageId);
-    }
-
-    private void sendMessageNotification(Chat chat, Message message) {
-        var messageContent = switch (message.getType()) {
-            case PHOTO -> "Photo";
-            case VIDEO -> "Video";
-            case VIDEO_MESSAGE -> "Video message";
-            case VOICE_MESSAGE -> "Voice message";
-            default -> message.getContent();
-        };
-
-        log.info("Sending message with id {} to notification service", message.getId());
-        kafkaTemplate.send("messages", new MessageSentEvent(
-                chat.getSenderUsername(), chat.getRecipientUsername(), messageContent, message.getType().name()));
     }
 }

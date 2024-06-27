@@ -46,10 +46,10 @@ public class RedisConfig {
 
         return (builder) -> builder
                 .withCacheConfiguration("chat",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(1))
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10))
                                 .serializeValuesWith(serializer))
                 .withCacheConfiguration("messages",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(1))
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10))
                                 .serializeValuesWith(serializer))
                 ;
     }

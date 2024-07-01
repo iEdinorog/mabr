@@ -15,7 +15,6 @@
     <name>mabr</name>
     <description>mabr</description>
     <modules>
-        <module>post-service</module>
         <module>messenger-service</module>
         <module>authentication-service</module>
         <module>api-gateway</module>

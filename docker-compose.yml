@@ -7,7 +7,7 @@ volumes:
     driver: local
 
 services:
-  zookeper:
+  zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
     ports:
@@ -21,7 +21,7 @@ services:
     ports:
       - "9092:9092"
     depends_on:
-      - zookeper
+      - zookeeper
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
@@ -51,3 +51,113 @@ services:
       - '9090:9090'
     volumes:
       - minio-data:/minio
+
+  postgres-user:
+    image: postgres
+    container_name: postgres-user
+    environment:
+      POSTGRES_DB: user-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      PG_DATA: /data/postgres
+    volumes:
+      - ./postgres-user:/data/postgres
+    expose:
+      - "5431"
+    ports:
+      - "5431:5431"
+
+  postgres-notification:
+    image: postgres
+    container_name: postgres-notification
+    environment:
+      POSTGRES_DB: notification-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      PG_DATA: /data/postgres
+    volumes:
+      - ./postgres-notification:/data/postgres
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+
+  postgres-messenger:
+    image: postgres
+    container_name: postgres-messenger
+    environment:
+      POSTGRES_DB: messenger-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      PG_DATA: /data/postgres
+    volumes:
+      - ./postgres-messenger:/data/postgres
+    expose:
+      - "5433"
+    ports:
+      - "5433:5433"
+
+  discovery-server:
+    image: iedinorog/mabr-discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+
+  authentication-service:
+    image: iedinorog/mabr-authentication-service
+    container_name: authentication-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - discovery-server
+
+  api-gateway:
+    image: iedinorog/mabr-api-gateway
+    container_name: api-gateway
+    ports:
+      - "8181:8080"
+    expose:
+      - "8181"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - authentication-service
+
+  user-service:
+    image: iedinorog/mabr-user-service
+    container_name: user-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-user
+      - api-gateway
+
+  messenger-service:
+    image: iedinorog/mabr-messenger-service
+    container_name: messenger-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-messenger
+      - api-gateway
+      - kafka
+      - redis
+
+  notification-service:
+    image: iedinorog/mabr-notification-service
+    container_name: notification-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-notification
+      - kafka
+
+  file-storage-service:
+    image: iedinrog/mabr-file-storage-service
+    container_name: file-storage-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres-messenger
+      - minio
+      - api-gateway

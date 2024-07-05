@@ -54,7 +54,7 @@ services:
 
   postgres-user:
     image: postgres
-    container_name: postgres-user
+    container_name: postgres_user
     environment:
       POSTGRES_DB: user-service
       POSTGRES_USER: postgres
@@ -66,12 +66,13 @@ services:
       - "5431"
     ports:
       - "5431:5431"
+    command: -p 5431
 
   postgres-notification:
     image: postgres
-    container_name: postgres-notification
+    container_name: postgres_notification
     environment:
-      POSTGRES_DB: notification-service
+      POSTGRES_DB: notification_service
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
       PG_DATA: /data/postgres
@@ -81,12 +82,13 @@ services:
       - "5432"
     ports:
       - "5432:5432"
+    command: -p 5432
 
   postgres-messenger:
     image: postgres
     container_name: postgres-messenger
     environment:
-      POSTGRES_DB: messenger-service
+      POSTGRES_DB: messenger_service
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
       PG_DATA: /data/postgres
@@ -96,9 +98,10 @@ services:
       - "5433"
     ports:
       - "5433:5433"
+    command: -p 5433
 
   discovery-server:
-    image: iedinorog/mabr-discovery-server
+    image: iedinorog/mabr-discovery-service
     container_name: discovery-server
     ports:
       - "8761:8761"
@@ -153,7 +156,7 @@ services:
       - kafka
 
   file-storage-service:
-    image: iedinrog/mabr-file-storage-service
+    image: iedinorog/mabr-file-storage-service
     container_name: file-storage-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker

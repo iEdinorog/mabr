@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://postgres-messenger:5432/messenger-service
+    url: jdbc:postgresql://postgres-user:5431/user_service
     username: postgres
     password: 123
 

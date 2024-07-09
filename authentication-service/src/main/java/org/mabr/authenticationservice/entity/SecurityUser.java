@@ -1,6 +1,5 @@
-package org.mabr.userservice.entity;
+package org.mabr.authenticationservice.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Table(name = "security_user")
 @Getter
 @Setter
-public class User {
+public class SecurityUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +18,5 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    @JsonIgnore
     private String password;
 }

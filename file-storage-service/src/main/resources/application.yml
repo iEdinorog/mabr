@@ -4,7 +4,7 @@ spring:
   application:
     name: file-storage-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/messenger-service
+    url: jdbc:postgresql://localhost:5432/user_service
     username: postgres
     password: 123
   jpa:

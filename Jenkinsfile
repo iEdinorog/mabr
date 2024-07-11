@@ -12,7 +12,9 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn clean compile jib:build'
+                withMaven {
+                    sh 'mvn clean compile jib:build'
+                }
             }
         }
     }

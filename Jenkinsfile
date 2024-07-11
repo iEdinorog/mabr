@@ -4,7 +4,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url:'https://github.com/iEdinorog/mabr'
+                git branch: 'master', 
+                    credentialsId: 'Jenkins',
+                    url:'https://github.com/iEdinorog/mabr.git'
+                
             }
         }
         stage('Build') {

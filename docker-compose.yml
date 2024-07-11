@@ -7,6 +7,15 @@ volumes:
     driver: local
 
 services:
+  jekins:
+    image: jenkins/jenkins
+    container_name: jenkins
+    ports:
+      - "5000:5000"
+      - "9090:8080"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper

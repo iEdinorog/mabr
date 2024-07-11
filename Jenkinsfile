@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+	environment {
+		mavenHome = tool 'maven'
+	}
+
     stages {
         stage('Checkout') {
             steps {
@@ -12,9 +16,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                withMaven {
-                    sh 'mvn clean compile jib:build'
-                }
+                bat "mvn clean compile jib:build"
             }
         }
     }

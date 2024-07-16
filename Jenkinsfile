@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
+                git branch: 'master',
                     credentialsId: '2d727f96-c50e-422a-8532-c166d7f06731',
                     url: 'https://github.com/iEdinorog/mabr.git'
             }

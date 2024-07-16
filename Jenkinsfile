@@ -7,7 +7,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-repo/spring-boot-app.git'
+                git branch: 'main',
+                    credentialsId: '2d727f96-c50e-422a-8532-c166d7f06731,
+                    url: 'https://github.com/iEdinorog/mabr.git'
             }
         }
         stage('Build') {

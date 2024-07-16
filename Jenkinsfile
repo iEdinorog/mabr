@@ -13,6 +13,12 @@ pipeline {
                     url: 'https://github.com/iEdinorog/mabr.git'
             }
         }
+        stage('Check version') {
+            steps {
+                sh 'java -version'
+                sh 'mvn -version'
+            }
+        }
         stage('Build') {
             steps {
                 sh 'mvn clean compile'

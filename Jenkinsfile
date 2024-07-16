@@ -14,7 +14,8 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean compile'
+                sh 'mvn jib:build'
             }
         }
     }

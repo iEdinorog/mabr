@@ -5,6 +5,8 @@ volumes:
     driver: local
   cache:
     driver: local
+  jenkins-data:
+    driver: local
 
 services:
   jekins:
@@ -12,7 +14,7 @@ services:
     container_name: jenkins
     ports:
       - "5000:5000"
-      - "9090:8080"
+      - "9191:8080"
     volumes:
       - jenkins-data:/var/jenkins_home
 
@@ -51,6 +53,8 @@ services:
   minio:
     image: minio/minio:latest
     container_name: minio
+    env_file:
+      - .env
     environment:
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
       - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}

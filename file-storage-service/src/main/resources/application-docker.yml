@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
     url: jdbc:postgresql://postgres-user:5431/user_service
     username: postgres
@@ -10,4 +12,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone : http://eureka:password@discovery-server:8761/eureka
+      defaultZone: http://eureka:password@discovery-server:8761/eureka
+      
+minio:
+  url: http://minio:9000

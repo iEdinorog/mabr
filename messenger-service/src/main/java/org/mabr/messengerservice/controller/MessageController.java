@@ -1,5 +1,6 @@
 package org.mabr.messengerservice.controller;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.mabr.messengerservice.dto.ForwardMessageDto;
 import org.mabr.messengerservice.dto.MessageDto;
@@ -10,10 +11,13 @@ import org.mabr.messengerservice.entity.AttachmentType;
 import org.mabr.messengerservice.entity.Message;
 import org.mabr.messengerservice.serivce.AttachmentService;
 import org.mabr.messengerservice.serivce.MessageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MessageController {
 
+    private static final Logger log = LoggerFactory.getLogger(MessageController.class);
     private final MessageService messageService;
     private final AttachmentService attachmentService;
 
@@ -51,11 +56,18 @@ public class MessageController {
     }
 
     @GetMapping("{chatId}/messages")
+    @CircuitBreaker(name = "message", fallbackMethod = "recoveryGetMessages")
     public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId,
                                                      @RequestParam(defaultValue = "0") int page,
                                                      @RequestParam(defaultValue = "10") int size) {
         var messages = messageService.getMessages(chatId, page, size);
         return ResponseEntity.ok(messages);
+    }
+
+    private ResponseEntity<List<Message>> recoveryGetMessages(Exception ex) {
+        log.warn(ex.getMessage(), ex);
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new ArrayList<>());
     }
 
     @GetMapping("{chatId}/attachments")

@@ -35,7 +35,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     var token = authHeader.substring(7);
 
                     return builder.build().get()
-                            .uri("http://authentication-service/auth/validate")
+                            .uri("http://authentication-service/authentication/api/auth/validate")
                             .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                             .retrieve()
                             .onStatus(HttpStatusCode::is4xxClientError, clientResponse ->

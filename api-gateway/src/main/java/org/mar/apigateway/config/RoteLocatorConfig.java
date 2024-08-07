@@ -21,7 +21,7 @@ public class RoteLocatorConfig {
                         .path("/eureka/**")
                         .uri("http://127.0.0.1:8761"))
                 .route(p -> p
-                        .path("/auth/**")
+                        .path("/authentication/api/**")
                         .uri("lb://authentication-service"))
                 .route(p -> p
                         .path("/notification/api/**")

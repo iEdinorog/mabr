@@ -36,9 +36,9 @@ public class MessageController {
     }
 
     @PostMapping("/message/update")
-    public ResponseEntity<Message> updateMessage(@RequestBody UpdateMessageDto messageDto) {
-        var message = messageService.updateMessage(messageDto);
-        return ResponseEntity.ok(message);
+    public ResponseEntity<HttpStatus> updateMessage(@RequestBody UpdateMessageDto messageDto) {
+        messageService.updateMessage(messageDto);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @PostMapping("/message/reply")

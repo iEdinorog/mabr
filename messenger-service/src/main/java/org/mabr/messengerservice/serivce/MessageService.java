@@ -33,6 +33,7 @@ public class MessageService {
     private final ChatService chatService;
     private final AttachmentService attachmentService;
     private final NotificationService notificationService;
+    private final MessageCacheService cacheService;
 
     @Transactional
     public void sendMessage(MessageDto messageDto) {
@@ -42,20 +43,28 @@ public class MessageService {
         notificationService.sendMessage(chat, messageDto);
     }
 
-    @Cacheable(value = "messages", key = "#chatId")
     public List<Message> getMessages(String chatId, int page, int size) {
         return fetchAndCacheMessages(chatId, page, size);
     }
 
-    @CachePut(value = "messages", key = "#chatId")
     public List<Message> fetchAndCacheMessages(String chatId, int page, int size) {
-        return messageRepository.findByChatId(chatId,
+        var cache = cacheService.getMessage(chatId, page, size);
+
+        if (!cache.isEmpty()) {
+            log.debug("Getting message from cache for chat {}", chatId);
+            return cache;
+        }
+
+        var messages = messageRepository.findByChatId(chatId,
                         PageRequest.of(page, size, Sort.by("sentAt").descending()))
                 .orElseThrow();
+
+        cacheService.saveMessages(chatId, messages, page, size);
+
+        return messages;
     }
 
-    @CacheEvict(value = "messages", allEntries = true)
-    public Message updateMessage(UpdateMessageDto messageDto) {
+    public void updateMessage(UpdateMessageDto messageDto) {
         var message = getMessageById(messageDto.messageId());
 
         message.setContent(messageDto.content());
@@ -65,11 +74,14 @@ public class MessageService {
         var attachments = attachmentService.updateAttachments(message, messageDto);
         message.getAttachments().addAll(attachments);
 
-        return messageRepository.save(message);
+        message = messageRepository.save(message);
+        log.info("Message {} was updated", message.getId());
+
+        cacheService.updateMessage(message);
     }
 
-    @CachePut(value = "messages", key = "#chat.id")
     @Async("taskExecutor")
+    @Transactional
     public void saveMessage(Chat chat, MessageDto messageDto) {
         var content = StringUtils.hasText(messageDto.content()) ? messageDto.content() : "";
 
@@ -86,8 +98,10 @@ public class MessageService {
         message.setAttachments(attachments);
         message.setStatusType(MessageStatusType.SENT);
 
-        log.info("{} sent message to chat {}", message.getSenderUsername(), chat.getChatId());
-        messageRepository.save(message);
+        message = messageRepository.save(message);
+        log.info("Message {} saved into chat {}", message.getId(), chat.getChatId());
+
+        cacheService.updateMessage(message);
     }
 
     public Message getMessageById(int id) {
@@ -114,7 +128,7 @@ public class MessageService {
     }
 
     public Message forwardMessage(ForwardMessageDto dto) {
-        var forwardedMessages  = dto.forwardedMessagesIds().stream()
+        var forwardedMessages = dto.forwardedMessagesIds().stream()
                 .map(this::getMessageById)
                 .toList();
 

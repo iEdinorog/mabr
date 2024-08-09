@@ -44,6 +44,7 @@ public class ChatService {
     }
 
     public Chat getChatById(String chatId, String senderUsername) {
+        //TODO: выбрасывать обрабатываемое исключение
         return chatRepository.findByChatIdAndSenderUsername(chatId, senderUsername).orElseThrow();
     }
 }

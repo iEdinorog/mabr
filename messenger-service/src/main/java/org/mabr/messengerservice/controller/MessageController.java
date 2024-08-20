@@ -1,7 +1,6 @@
 package org.mabr.messengerservice.controller;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import lombok.RequiredArgsConstructor;
 import org.mabr.messengerservice.dto.ForwardMessageDto;
 import org.mabr.messengerservice.dto.MessageDto;
 import org.mabr.messengerservice.dto.ReplyMessageDto;
@@ -13,6 +12,7 @@ import org.mabr.messengerservice.serivce.AttachmentService;
 import org.mabr.messengerservice.serivce.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +22,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/chats")
-@RequiredArgsConstructor
 public class MessageController {
 
     private static final Logger log = LoggerFactory.getLogger(MessageController.class);
     private final MessageService messageService;
     private final AttachmentService attachmentService;
+
+    public MessageController(@Qualifier("cachedMessageService") MessageService messageService,
+                             AttachmentService attachmentService) {
+        this.messageService = messageService;
+        this.attachmentService = attachmentService;
+    }
 
     @PostMapping("/messages")
     public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageDto messageDto) {
@@ -44,14 +49,12 @@ public class MessageController {
     @PostMapping("/message/reply")
     public ResponseEntity<Message> replyToMessage(@RequestBody ReplyMessageDto dto) {
         var message = messageService.replyToMessage(dto);
-
         return ResponseEntity.ok(message);
     }
 
     @PostMapping("/message/forward")
     public ResponseEntity<Message> forwardMessage(@RequestBody ForwardMessageDto dto) {
         var message = messageService.forwardMessage(dto);
-
         return ResponseEntity.ok(message);
     }
 
@@ -66,7 +69,6 @@ public class MessageController {
 
     private ResponseEntity<List<Message>> recoveryGetMessages(Exception ex) {
         log.warn(ex.getMessage(), ex);
-
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new ArrayList<>());
     }
 
@@ -82,7 +84,6 @@ public class MessageController {
     @PostMapping("/message/{messageId}/delete")
     public ResponseEntity<?> deleteMessage(@PathVariable int messageId) {
         messageService.deleteMessage(messageId);
-
         return ResponseEntity.ok().build();
     }
 }

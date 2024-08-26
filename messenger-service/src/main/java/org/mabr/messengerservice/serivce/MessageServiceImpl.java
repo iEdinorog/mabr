@@ -63,7 +63,6 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Async("taskExecutor")
-    @Transactional
     public void saveMessage(Chat chat, MessageDto messageDto) {
         var content = StringUtils.hasText(messageDto.content()) ? messageDto.content() : "";
 

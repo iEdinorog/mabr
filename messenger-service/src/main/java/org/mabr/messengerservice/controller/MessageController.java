@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/chats")
+@RequestMapping("/messages")
 public class MessageController {
 
     private static final Logger log = LoggerFactory.getLogger(MessageController.class);
@@ -34,31 +34,31 @@ public class MessageController {
         this.attachmentService = attachmentService;
     }
 
-    @PostMapping("/messages")
+    @PostMapping()
     public ResponseEntity<HttpStatus> sendMessage(@RequestBody MessageDto messageDto) {
         messageService.sendMessage(messageDto);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @PostMapping("/message/update")
+    @PostMapping("/update")
     public ResponseEntity<HttpStatus> updateMessage(@RequestBody UpdateMessageDto messageDto) {
         messageService.updateMessage(messageDto);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @PostMapping("/message/reply")
+    @PostMapping("/reply")
     public ResponseEntity<Message> replyToMessage(@RequestBody ReplyMessageDto dto) {
         var message = messageService.replyToMessage(dto);
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("/message/forward")
+    @PostMapping("/forward")
     public ResponseEntity<Message> forwardMessage(@RequestBody ForwardMessageDto dto) {
         var message = messageService.forwardMessage(dto);
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("{chatId}/messages")
+    @GetMapping("/{chatId}")
     @CircuitBreaker(name = "message", fallbackMethod = "recoveryGetMessages")
     public ResponseEntity<List<Message>> getMessages(@PathVariable String chatId,
                                                      @RequestParam(defaultValue = "0") int page,
@@ -72,7 +72,7 @@ public class MessageController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new ArrayList<>());
     }
 
-    @GetMapping("{chatId}/attachments")
+    @GetMapping("/{chatId}/attachments")
     public ResponseEntity<List<Attachment>> getAttachments(@PathVariable String chatId,
                                                            @RequestParam AttachmentType type,
                                                            @RequestParam(defaultValue = "0") int page,
@@ -81,7 +81,7 @@ public class MessageController {
         return ResponseEntity.ok(images);
     }
 
-    @PostMapping("/message/{messageId}/delete")
+    @PostMapping("/{messageId}/delete")
     public ResponseEntity<?> deleteMessage(@PathVariable int messageId) {
         messageService.deleteMessage(messageId);
         return ResponseEntity.ok().build();

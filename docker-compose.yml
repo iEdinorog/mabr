@@ -211,3 +211,16 @@ services:
     environment:
     - GF_SECURITY_ADMIN_USER=admin
     - GF_SECURITY_ADMIN_PASSWORD=adminpassword
+
+  elastic:
+    image: elasticsearch:8.5.3
+    container_name: elastic
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+    volumes:
+      - elastic:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"

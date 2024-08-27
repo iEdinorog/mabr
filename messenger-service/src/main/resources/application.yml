@@ -3,6 +3,12 @@ spring:
     import: optional:file:.env[.properties]
   application:
     name: messenger-service
+  elasticsearch:
+    uris: http://localhost:9200
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/messenger_service
     username: postgres

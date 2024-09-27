@@ -1,4 +1,4 @@
-package org.mabr.filestorageservice.service;
+package org.mabr.filestorageservice.service.video;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

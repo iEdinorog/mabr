@@ -2,7 +2,7 @@ package org.mabr.filestorageservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.mabr.filestorageservice.utils.Range;
-import org.mabr.filestorageservice.service.VideoService;
+import org.mabr.filestorageservice.service.video.VideoService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

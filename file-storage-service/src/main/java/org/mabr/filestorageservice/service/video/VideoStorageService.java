@@ -1,4 +1,4 @@
-package org.mabr.filestorageservice.service;
+package org.mabr.filestorageservice.service.video;
 
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;

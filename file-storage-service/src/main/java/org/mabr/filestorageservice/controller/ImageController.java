@@ -1,14 +1,15 @@
 package org.mabr.filestorageservice.controller;
 
 import lombok.RequiredArgsConstructor;
-
-import org.mabr.filestorageservice.service.ImageService;
+import org.mabr.filestorageservice.service.image.ImageService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/image")
@@ -18,9 +19,9 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping()
-    public ResponseEntity<String> upload(@RequestParam MultipartFile file) {
-        var fileName = imageService.upload(file);
-        return ResponseEntity.ok(fileName);
+    public ResponseEntity<List<String>> upload(@RequestParam List<MultipartFile> files) {
+        var urls = imageService.upload(files);
+        return ResponseEntity.ok(urls);
     }
 
     @PostMapping("/{imageName}/delete")
